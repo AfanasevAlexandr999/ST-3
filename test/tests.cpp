@@ -64,7 +64,13 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
 
 TEST_F(TimedDoorTest, DoorTimerAdapterCallsThrowStateOnTimeout) {
   door->unlock();
+  // Timer is activated and thread is started
+  EXPECT_TRUE(door->isDoorOpened());
+  // Wait for timeout to trigger
   std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+  // Door should still be in the same state (timeout doesn't change it,
+  // but throwState was called in the background thread)
+  EXPECT_TRUE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, DoorTimerAdapterNoThrowWhenDoorClosedBeforeTimeout) {

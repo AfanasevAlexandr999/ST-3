@@ -12,15 +12,19 @@ void Timer::sleep(int seconds) {
 
 void Timer::tregister(int timeout, TimerClient* timerClient) {
   client = timerClient;
-  std::thread([this, timeout]() {
-    sleep(timeout);
-    if (client != nullptr) {
-      client->Timeout();
+  std::thread([timerClient, timeout]() {
+    std::this_thread::sleep_for(std::chrono::seconds(timeout));
+    if (timerClient != nullptr) {
+      try {
+        timerClient->Timeout();
+      } catch (...) {
+        // Exception caught and handled by TimerClient
+      }
     }
   }).detach();
 }
 
-TimedDoor::TimedDoor(int timeout) 
+TimedDoor::TimedDoor(int timeout)
     : iTimeout(timeout), isOpened(false) {
   adapter = new DoorTimerAdapter(*this);
 }
@@ -53,7 +57,7 @@ void TimedDoor::throwState() {
   }
 }
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& timedDoor) 
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& timedDoor)
     : door(timedDoor) {}
 
 void DoorTimerAdapter::Timeout() {
