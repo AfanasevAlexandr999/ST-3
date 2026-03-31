@@ -35,6 +35,7 @@ class TimedDoor : public Door {
   bool isOpened;
  public:
   explicit TimedDoor(int);
+  ~TimedDoor();
   bool isDoorOpened();
   void unlock();
   void lock();
@@ -46,7 +47,8 @@ class Timer {
   TimerClient *client;
   void sleep(int);
  public:
+  Timer();
   void tregister(int, TimerClient*);
 };
 
-#endif  // INCLUDE_TIMEDDOOR_H_
+#endif
